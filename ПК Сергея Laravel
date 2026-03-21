@@ -1,1 +1,17 @@
-Подключение сервера
+1)  Подключение сервера: 
+1.Файловые системы
+2.etc (через root)
+3.В файл Hosts
+4.В существующем ip prof.ru добавить название своего сайта / создать ip prof.ru добавить url своей страницы
+
+(@):   Prof.ru:  duxadrkv    RXPAXX
+
+
+2)Подключение консоли к серверу:
+1. Putty:
+    ip adress (сервера) → логин и пароль
+    cd к проекту
+    ssh (login)
+    ssh (login)@prof.ru
+    composer create project laravel/laravel .
+    
