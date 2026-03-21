@@ -1,17 +1,126 @@
-1)  Подключение сервера: 
+1) Подключение сервера: 
 1.Файловые системы
 2.etc (через root)
 3.В файл Hosts
-4.В существующем ip prof.ru добавить название своего сайта / создать ip prof.ru добавить url своей страницы
+4.В существующем ip prof.ru добавить url своей страницы / создать ip prof.ru добавить url своей страницы
 
 (@):   Prof.ru:  duxadrkv    RXPAXX
 
 
-2)Подключение консоли к серверу:
-1. Putty:
+2) Подключение консоли к серверу:
+   Putty:
     ip adress (сервера) → логин и пароль
     cd к проекту
     ssh (login)
     ssh (login)@prof.ru
-    composer create project laravel/laravel .
-    
+    composer create-project laravel/laravel .      либо unzip ../public/api12.zip -d ./
+
+
+3) Настройка env:
+
+    DB_CONNECTION=mysql
+    DB_HOST=127.0.0.1
+    DB_PORT=3306
+    DB_DATABASE=(Название папки_м#)
+    DB_USERNAME=(login)
+    DB_PASSWORD=(pass)
+
+    php artisan key:generate
+
+    (*): В этом блоке убрать комментарии
+         При установке через composer key:generate не нужен         
+
+
+4) .htaccess
+
+    Создаем его в папке вида:
+    Laravel
+      .htaccess
+
+    .htaccess код:
+    RewriteEngine On
+    RewriteRule ^(.*)$ public/1$
+
+
+5) php artisan serve
+   (Локальный сервер)
+
+6)  Удаляем файл с базой sqlite.
+    Php artisan migrate:fresh
+
+
+8) Удаляем файл sqlight (если есть)
+        (*): Сносим БД с прошлой работы в PHPMyAdmin
+             (Ссылка под модулями в проф.ру)
+
+
+9)
+
+
+
+
+
+
+
+
+
+<?php
+
+namespace App\Http\Controllers;
+
+use App\Models\User;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Validator;
+
+class AuthController extends Controller
+{
+    public function register(Request $request) {
+        $validate = Validator::make($request->all(), [
+            'name' => 'required',
+            'email' => 'required|email|unique:users',
+            'password' => 'required|min:4'
+        ]);
+
+        if($validate->fails()) {
+            return response()->json([
+                'success' => 'false',
+                'message' => $validate->errors()
+            ]);
+        };
+
+        $user = User::create($validate->validate());
+        return response()->json([
+            'message' => 'Пользователь успешно зарегистрован',
+            "user" => $user
+        ]);
+    }
+
+    public function login(Request $request) {
+
+        $validate = Validator::make($request->all(), [
+            'email' => 'required|email',
+            'password' => 'required'
+        ]);
+
+        if($validate->fails()) {
+            return response()->json([
+                'success' => 'false',
+                'message' => $validate->errors()
+            ]);
+        };
+
+        if(Auth::attempt($validate->validate())) {
+            Auth::user()->tokens()->delete();
+            $access_token = Auth::user()->createToken('api')->plainTextToken;
+            return response()->json([
+                'access_token' => $access_token
+            ]);
+        }
+
+        return response()->json([
+            'message' => 'Login failed'
+        ]);
+
+    }
+}
