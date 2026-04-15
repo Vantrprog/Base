@@ -1,0 +1,7 @@
+git clone (address)
+npm i
+composer i
+php artisan serve
+Где то взять файл .env
+php artisan migrate (yes)
+npm run dev
